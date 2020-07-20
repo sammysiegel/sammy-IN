@@ -208,9 +208,9 @@ class ClassModel(object):
             XdotRR = Lambda(lambda tensor: tf.transpose(tf.tensordot(tf.transpose(tensor,perm=(0,2,1)),RR,axes=[[2],[0]]),perm=(0,2,1)),name="XdotRR")(inputParticle)
             XdotRS = Lambda(lambda tensor: tf.transpose(tf.tensordot(tf.transpose(tensor,perm=(0,2,1)),RS,axes=[[2],[0]]),perm=(0,2,1)),name="XdotRS")(inputParticle)
             Bpp = Lambda(lambda tensorList: tf.concat((tensorList[0],tensorList[1]),axis=2),name="Bpp")([XdotRR,XdotRS])
-            convOneParticle = Conv1D(90,kernel_size=1,activation="relu",name="convOneParticle")(Bpp)
-            convTwoParticle = Conv1D(60,kernel_size=1,activation="relu",name="convTwoParticle")(convOneParticle)
-            convThreeParticle = Conv1D(50,kernel_size=1,activation="relu",name="convThreeParticle")(convTwoParticle)
+            convOneParticle = Conv1D(60,kernel_size=1,activation="relu",name="convOneParticle")(Bpp)
+            convTwoParticle = Conv1D(30,kernel_size=1,activation="relu",name="convTwoParticle")(convOneParticle)
+            convThreeParticle = Conv1D(20,kernel_size=1,activation="relu",name="convThreeParticle")(convTwoParticle)
 
             Epp = BatchNormalization(momentum=0.6,name="Epp")(convThreeParticle)
 
@@ -237,10 +237,10 @@ class ClassModel(object):
             else:
                 C = Lambda(lambda listOfTensors: tf.concat((listOfTensors[0],listOfTensors[1]),axis=2),name="C")([inputParticle,EppBar])
 
-            convPredictOne = Conv1D(90,kernel_size=1,activation="relu",name="convPredictOne")(C)
-            convPredictTwo = Conv1D(60,kernel_size=1,activation="relu",name="convPredictTwo")(convPredictOne)
+            convPredictOne = Conv1D(60,kernel_size=1,activation="relu",name="convPredictOne")(C)
+            convPredictTwo = Conv1D(30,kernel_size=1,activation="relu",name="convPredictTwo")(convPredictOne)
 
-            O = Conv1D(50,kernel_size=1,activation="relu",name="O")(convPredictTwo)
+            O = Conv1D(24,kernel_size=1,activation="relu",name="O")(convPredictTwo)
 
             #Calculate output
             OBar = Lambda(lambda tensor: K.sum(tensor,axis=1),name="OBar")(O)
@@ -304,7 +304,7 @@ class ClassModel(object):
 
         if not args.SV:
            history = self.model.fit(self.tX, self.tY, sample_weight=self.tW,
-                                 batch_size=1000, epochs=70, shuffle=True,
+                                 batch_size=1000, epochs=50, shuffle=True,
                                  validation_data=(self.vX, self.vY, self.vW),
                                  callbacks=[self.es,self.cp])
         else:
